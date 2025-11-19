@@ -1,1 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GCSE Maths (Eduqas) — Foundation Non‑Calculator: End‑of‑Topic Assessment (16Q)</title>
+<style>
+  :root{
+    --ink:#0f172a; --muted:#6b7280; --accent:#2563eb; --bg:#ffffff; --border:#e5e7eb; --tabh:56px;
+    --green:#16a34a; --orange:#f59e0b; --red:#dc2626;
+    --tabGood:#10b981; --tabMid:#fbbf24; --tabBad:#ef4444;
+    --fbar:1px; /* ultra‑thin fraction bar */
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
+  header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border)}
+  main{max-width:1040px;margin:1.2rem auto 4rem;padding:0 1rem}
 
+  /* tabs */
+  .bar{display:flex;gap:.5rem;align-items:center;overflow:auto hidden;white-space:nowrap;height:var(--tabh);padding:.65rem .75rem}
+  .bar button{appearance:none;border:1px solid var(--border);background:#fff;color:#0f172a;
+    border-radius:999px;padding:.45rem .9rem;cursor:pointer;font-weight:700;transition:.15s;flex:0 0 auto}
+  .bar button:hover{border-color:#c7d2fe}
+  .bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* colouring after marking */
+  .bar button.good{background:var(--tabGood);color:#083344;border-color:var(--tabGood)}
+  .bar button.mid{background:var(--tabMid);color:#291800;border-color:var(--tabMid)}
+  .bar button.bad{background:var(--tabBad);color:#fff;border-color:var(--tabBad)}
+
+  section.page{display:none;animation:fade .15s ease-out}
+  section.page.active{display:block}
+  @keyframes fade{from{opacity:.45;transform:translateY(-2px)}to{opacity:1;transform:none}}
+
+  .qpanel{border:1px solid var(--border);border-radius:.8rem;overflow:hidden;margin-top:.9rem;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  .qhead{padding:.85rem 1rem;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#fbfdff,#f8fafc);
+    display:flex;align-items:center;justify-content:space-between}
+  .qhead h3{margin:.15rem 0;font-size:1.05rem}
+  .qbody{padding:1.05rem 1rem}
+  .badge{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border:1px solid var(--border);border-radius:6px;background:#eef2ff}
+  .nc-tag{font-weight:800;color:#15803d;text-transform:uppercase;letter-spacing:.02em}
+  .muted{color:var(--muted)}
+  .actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+  .primary{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:.45rem;padding:.55rem 1rem;cursor:pointer}
+
+  input[type="text"], input[type="number"], select, textarea{
+    padding:.4rem .5rem;border:1px solid var(--border);border-radius:.4rem;min-width:64px}
+  input::placeholder{color:#9aa3b2}
+  textarea{width:100%;min-height:120px}
+
+  /* fraction input widget (exact pattern you asked for) */
+  .frac{display:inline-grid;grid-template-rows:auto 0 auto;row-gap:0;align-items:center;justify-items:center;line-height:0;vertical-align:middle}
+  .frac input{width:70px;text-align:center;border:1px solid var(--border);border-radius:.35rem;padding:.35rem .4rem;margin:0;appearance:textfield}
+  .frac input::-webkit-outer-spin-button,.frac input::-webkit-inner-spin-button{appearance:none;margin:0}
+  .frac .bar{width:70px;height:0;border-top:var(--fbar) solid #111;margin:15px 0 0 0}
+  .frac input:last-child{margin-top:-2px} /* nudge denominator up to sit tight to the bar */
+
+  /* (old fracinp kept, not used now) */
+  .fracinp{display:inline-flex;flex-direction:column;align-items:center;gap:2px;vertical-align:middle}
+  .fracinp input{width:70px;text-align:center;border:1px solid var(--border);border-radius:.35rem;padding:.35rem .4rem;appearance:textfield}
+  .fracinp input::-webkit-outer-spin-button,.fracinp input::-webkit-inner-spin-button{appearance:none;margin:0}
+  .fracinp .bar{width:70px;height:0;border-top:var(--fbar) solid #111;margin:1px 0}
+
+  /* Smart Targets box */
+  #smartWrap{display:none;border:1px solid var(--border);border-radius:.6rem;padding:1rem;background:#f8fafc}
+  #smartBox{width:100%;min-height:200px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  #copyBtn{margin-top:.5rem}
+
+  /* Intro modal */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:1000}
+  .modal .panel{width:min(760px,94vw);background:#fff;border:1px solid var(--border);border-radius:.8rem;padding:1.1rem}
+  .modal h2{margin:.1rem 0 .4rem}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar" id="tabbar" role="tablist" aria-label="Quick navigation">
+    <button class="active" data-target="q1"  role="tab" aria-selected="true">Q1</button>
+    <button data-target="q2"  role="tab">Q2</button>
+    <button data-target="q3"  role="tab">Q3</button>
+    <button data-target="q4"  role="tab">Q4</button>
+    <button data-target="q5"  role="tab">Q5</button>
+    <button data-target="q6"  role="tab">Q6</button>
+    <button data-target="q7"  role="tab">Q7</button>
+    <button data-target="q8"  role="tab">Q8</button>
+    <button data-target="q9"  role="tab">Q9</button>
+    <button data-target="q10" role="tab">Q10</button>
+    <button data-target="q11" role="tab">Q11</button>
+    <button data-target="q12" role="tab">Q12</button>
+    <button data-target="q13" role="tab">Q13</button>
+    <button data-target="q14" role="tab">Q14</button>
+    <button data-target="q15" role="tab">Q15</button>
+    <button data-target="q16" role="tab">Q16</button>
+    <button data-target="results" role="tab">Results</button>
+  </div>
+</header>
+
+<main>
+  <!-- Q1 BIDMAS (two ops only) -->
+  <section id="q1" class="page active" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Number — BIDMAS (two operations only) <span class="badge">[2 marks]</span></h3>
+        <span class="nc-tag">NON‑CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <p><b>(a)</b> Work out: <b>6 × 4 − 7</b> → <input id="q1a" size="6"></p>
+        <p><b>(b)</b> Work out: <b>40 ÷ 5 + 3</b> → <input id="q1b" size="6"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q2 prime factors + HCF/LCM  -->
+  <section id="q2" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Number — Product of prime factors; HCF & LCM <span class="badge">[5 marks]</span></h3>
+        <span class="nc-tag">NON‑CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <p><b>(a)</b> Write <b>196</b> as a product of prime factors. Leave your final answer in index form (order does not matter).</p>
+        <p>196 = <input id="q2a" size="32">
+          <button onclick="insertAt('q2a','×')" type="button">×</button>
+          <button onclick="insertAt('q2a','²')" type="button">²</button>
+          <button onclick="insertAt('q2a','³')" type="button">³</button>
+        </p>
+        <hr style="border:none;border-top:1px solid var(--border);margin:.9rem 0">
+        <p><b>(b)</b> For the numbers <b>36</b> and <b>48</b>, find the <b>HCF</b> and the <b>LCM</b>.</p>
+        <p>HCF = <input id="q2bH" size="8"> &nbsp; LCM = <input id="q2bL" size="8"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q3 place value / rounding / powers -->
+  <section id="q3" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Number — Place value, rounding & integer powers <span class="badge">[3 marks]</span></h3>
+        <span class="nc-tag">NON‑CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <p><b>(a)</b> Round <b>8473</b> to the nearest <b>100</b>. → <input id="q3a" size="8"></p>
+        <p><b>(b)</b> What is the value of the digit <b>6</b> in <b>0.607</b>? → <input id="q3b" size="8"></p>
+        <p><b>(c)</b> Work out <b>3² + 4²</b>. → <input id="q3c" size="6"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q4 fraction add/sub (now using .frac boxes) -->
+  <section id="q4" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Fractions — Add &amp; subtract <span class="badge">[4 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p><b>(a)</b> Calculate 
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>+</mo><mfrac><mn>1</mn><mn>6</mn></mfrac></math>.
+          Give your answer in its simplest form.</p>
+        <span class="frac" aria-label="Q4a fraction answer">
+          <input id="q4aN" type="number" inputmode="numeric" aria-label="numerator">
+          <span class="bar"></span>
+          <input id="q4aD" type="number" inputmode="numeric" aria-label="denominator">
+        </span>
+
+        <p style="margin-top:.9rem"><b>(b)</b> Calculate 
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mfrac><mn>5</mn><mn>6</mn></mfrac><mo>−</mo><mfrac><mn>3</mn><mn>8</mn></mfrac></math>. 
+          Give your answer in its simplest form.</p>
+        <span class="frac" aria-label="Q4b fraction answer">
+          <input id="q4bN" type="number" inputmode="numeric" aria-label="numerator">
+          <span class="bar"></span>
+          <input id="q4bD" type="number" inputmode="numeric" aria-label="denominator">
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q5 multiply & divide fractions (now using .frac boxes) -->
+  <section id="q5" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Fractions — Multiply &amp; divide <span class="badge">[4 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p><b>(a)</b> 
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+            <mfrac><mn>2</mn><mn>3</mn></mfrac><mo>×</mo><mfrac><mn>3</mn><mn>5</mn></mfrac>
+          </math> &nbsp; (simplest form)</p>
+        <span class="frac" aria-label="Q5a fraction answer">
+          <input id="q5aN" type="number" inputmode="numeric"><span class="bar"></span><input id="q5aD" type="number" inputmode="numeric">
+        </span>
+
+        <p style="margin-top:.9rem"><b>(b)</b> 
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+            <mfrac><mn>3</mn><mn>4</mn></mfrac><mo>÷</mo><mfrac><mn>2</mn><mn>3</mn></mfrac>
+          </math> &nbsp; (improper fraction in simplest form)</p>
+        <span class="frac" aria-label="Q5b fraction answer">
+          <input id="q5bN" type="number" inputmode="numeric"><span class="bar"></span><input id="q5bD" type="number" inputmode="numeric">
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q6 FDP + extra decimal part (now using .frac boxes) -->
+  <section id="q6" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>FDP — Conversions &amp; simplification <span class="badge">[4 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p><b>(a)</b> Write <b>35%</b> as a fraction in its simplest form.</p>
+        <span class="frac">
+          <input id="q6aN" type="number"><span class="bar"></span><input id="q6aD" type="number">
+        </span>
+
+        <p style="margin-top:.9rem"><b>(b)</b> Write <b>0.4</b> as a fraction in its simplest form.</p>
+        <span class="frac">
+          <input id="q6bN" type="number"><span class="bar"></span><input id="q6bD" type="number">
+        </span>
+
+        <p style="margin-top:.9rem"><b>(c)</b> Simplify 
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mfrac><mn>9</mn><mn>12</mn></mfrac></math>.
+        </p>
+        <span class="frac">
+          <input id="q6cN" type="number"><span class="bar"></span><input id="q6cD" type="number">
+        </span>
+
+        <p style="margin-top:.9rem"><b>(d)</b> Write 
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mfrac><mn>3</mn><mn>8</mn></mfrac></math> as a decimal. → <input id="q6d" size="8"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q7 fractions from a context (now using .frac boxes) -->
+  <section id="q7" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Fractions — From a set <span class="badge">[2 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p>A bag has <b>5</b> red and <b>7</b> blue counters.</p>
+        <p><b>(a)</b> What fraction of the counters are <b>red</b>?</p>
+        <span class="frac"><input id="q7aN" type="number"><span class="bar"></span><input id="q7aD" type="number"></span>
+        <p style="margin-top:.8rem"><b>(b)</b> What fraction of the counters are <b>blue</b>?</p>
+        <span class="frac"><input id="q7bN" type="number"><span class="bar"></span><input id="q7bD" type="number"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q8 percentages (amount & change) -->
+  <section id="q8" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Percentages — Amount &amp; percentage change <span class="badge">[3 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p><b>(a)</b> Find <b>15%</b> of <b>80</b>. → <input id="q8a" size="8"></p>
+        <p><b>(b)</b> Decrease <b>60</b> by <b>25%</b>. → <input id="q8b" size="8"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q9 rounding & estimation -->
+  <section id="q9" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Rounding &amp; Estimation <span class="badge">[3 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p><b>(a)</b> Round <b>7349</b> to the nearest <b>1000</b>. → <input id="q9a" size="8"></p>
+        <p><b>(b)</b> Estimate 
+          <b>298 × 0.51</b> by rounding each number to <b>1 significant figure</b>. → <input id="q9b" size="8">
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q10 Map scale: actual & map distance -->
+  <section id="q10" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Scale / Maps — Actual &amp; map distance <span class="badge">[4 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p>The scale on a map is <b>1 : 25 000</b>.</p>
+        <p><b>(a)</b> Two towns are <b>6 cm</b> apart on the map. What is the actual distance in <b>km</b>? → <input id="q10a" size="8"> km</p>
+        <p><b>(b)</b> The actual distance between two villages is <b>2 km</b>. How far apart are they on the map (in <b>cm</b>)? → <input id="q10b" size="8"> cm</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q11 Simple interest -->
+  <section id="q11" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Money — Simple interest <span class="badge">[4 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p>£600 is invested at <b>5% simple interest</b> per year for <b>3 years</b>.</p>
+        <p><b>(a)</b> Interest earned = £ <input id="q11a" size="8"></p>
+        <p><b>(b)</b> Final amount = £ <input id="q11b" size="8"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q12 Ratio sharing -->
+  <section id="q12" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Ratio — Sharing in a given ratio <span class="badge">[4 marks]</span></h3><span class="nc-tag">NON‑CALCULATOR</span></div>
+      <div class="qbody">
+        <p>£72 is shared between <b>Amir</b> and <b>Bea</b> in the ratio <b>5 : 3</b>.</p>
+        <p>Amir gets £ <input id="q12a" size="8"> &nbsp;&nbsp; Bea gets £ <input id="q12b" size="8"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q13 EXACT as requested -->
+  <section id="q13" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Indirect (inverse) proportion — Hoses filling a pool <span class="badge">[3 marks]</span></h3><span class="nc-tag">NON‑CALC</span></div>
+      <div class="qbody">
+        <p>The time <b>t</b> (in minutes) to fill a small pool is <b>inversely proportional</b> to the number of identical hoses <b>n</b> used.</p>
+        <p>With <b>3</b> hoses it takes <b>30</b> minutes.</p>
+        <p>(a) How long with <b>5</b> hoses? t = <input id="q13a" size="6"> min</p>
+        <p>(b) How many hoses are needed to finish in <b>18</b> minutes? n = <input id="q13b" size="6"></p>
+        <p>(c) If only <b>2</b> hoses are available one day, how long will it take? t = <input id="q13c" size="6"> min</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q14 EXACT as requested -->
+  <section id="q14" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Scale factor — Perimeter & area under enlargement <span class="badge">[3 marks]</span></h3><span class="nc-tag">NON‑CALC</span></div>
+      <div class="qbody">
+        <p>A rectangle is <b>2 cm</b> by <b>5 cm</b>. It is enlarged by scale factor <b>3</b>.</p>
+        <p>(a) New <b>perimeter</b> = <input id="q14a" size="6"> cm</p>
+        <p>(b) New <b>area</b> = <input id="q14b" size="6"> cm²</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q15 changed (no ghost text) -->
+  <section id="q15" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Ratio — Write in the forms <i>n : 1</i> and <i>1 : n</i> <span class="badge">[2 marks]</span></h3>
+        <span class="nc-tag">NON‑CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <p><b>(a)</b> Write <b>18 : 30</b> in the form <b>n : 1</b>. → <input id="q15a" size="8"></p>
+        <p><b>(b)</b> Write <b>250 : 1000</b> in the form <b>1 : n</b>. → <input id="q15b" size="8"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q16 currency conversion -->
+  <section id="q16" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Money — Currency conversion (£ ↔ €) <span class="badge">[2 marks]</span></h3>
+        <span class="nc-tag">NON‑CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <p>Use the exchange rate <b>£1 = €1.20</b>.</p>
+        <p><b>(a)</b> Convert <b>£45</b> to euros. → € <input id="q16a" size="8"></p>
+        <p><b>(b)</b> Convert <b>€78</b> to pounds. → £ <input id="q16b" size="8"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Results & SMART Targets</h3></div>
+      <div class="qbody">
+        <div class="actions" style="margin-bottom:.8rem">
+          <button class="primary" id="markAllBtn">Mark questions</button>
+        </div>
+        <p><b>Total score:</b> <span id="totalscore" style="font-weight:700">0</span> / <span id="totalmax" style="font-weight:700">0</span></p>
+        <p><b>Indicative grade:</b> <span id="grade" style="font-weight:700">—</span></p>
+
+        <h4 style="margin:1.1rem 0 .6rem">SMART Targets</h4>
+        <p class="muted">After marking, your personalised SMART Targets will appear below. <b>Copy them</b> and paste into your target tracker.</p>
+        <div id="smartWrap">
+          <p style="margin:.2rem 0 .6rem"><b>Copy this into your target section:</b></p>
+          <textarea id="smartBox" readonly></textarea>
+          <button id="copyBtn" type="button">Copy to clipboard</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Intro / Instructions modal -->
+<div id="intro" class="modal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="panel">
+    <h2 id="introTitle">End‑of‑Topic Assessment — Foundation (Eduqas style)</h2>
+    <p><b>Important:</b> This is a <b>NON‑CALCULATOR</b> paper. Show clear working where appropriate.</p>
+    <ul>
+      <li>There are 16 questions covering Number, FDP, Fractions, Ratio/Proportion, Scale & Money.</li>
+      <li>Use the <b>Results</b> tab after you finish. It will lock your answers, colour the question tabs by performance, and generate your <b>SMART Targets</b>.</li>
+      <li>SMART Targets are the exact Century Nugget codes to complete next — copy them straight into your target area.</li>
+    </ul>
+    <div class="actions" style="margin-top:.6rem">
+      <button class="primary" id="startBtn" type="button">Start</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Tabs ---------- */
+const tabs=[...document.querySelectorAll('#tabbar button')];
+const pages=[...document.querySelectorAll('section.page')];
+function showTab(id){
+  tabs.forEach(x=>{
+    const on = x.dataset.target===id;
+    x.classList.toggle('active', on);
+    if(on) x.setAttribute('aria-selected','true'); else x.removeAttribute('aria-selected');
+  });
+  pages.forEach(p=>p.classList.toggle('active', p.id===id));
+  localStorage.setItem('currentTab_noncalc',id);
+}
+tabs.forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.target)));
+const last=localStorage.getItem('currentTab_noncalc');
+if(last && document.getElementById(last)){ showTab(last); } else { showTab('q1'); }
+
+/* ---------- Intro ---------- */
+const intro=document.getElementById('intro');
+document.getElementById('startBtn').addEventListener('click',()=>{ intro.style.display='none'; showTab('q1'); });
+function openIntro(){ intro.style.display='flex'; }
+openIntro();
+
+/* ---------- Helpers ---------- */
+const $ = (id)=>document.getElementById(id);
+const asNum=v=>parseFloat(String(v).replace(/[^\-0-9.]/g,'').trim());
+const tol=(a,b,e=0.5)=>Math.abs(asNum(a)-b)<=e;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1}
+const simpFrac=(n,d)=>{if(!Number.isFinite(n)||!Number.isFinite(d)||d===0)return[NaN,NaN];let g=gcd(n,d);if(d<0){n=-n;d=-d}return[n/g,d/g]}
+function fracOK(nGiven,dGiven,nTrue,dTrue,needSimplest=true){
+  const g=simpFrac(nGiven,dGiven), t=simpFrac(nTrue,dTrue);
+  if(!Number.isFinite(g[0])||!Number.isFinite(g[1])) return false;
+  const same = (g[0]===t[0] && g[1]===t[1]);
+  if(!same) return false;
+  if(!needSimplest) return true;
+  const notSimpler = (Math.abs(nGiven)===Math.abs(g[0]) && Math.abs(dGiven)===Math.abs(g[1]));
+  return notSimpler;
+}
+function getFrac(prefix){
+  const n=asNum($(prefix+'N').value), d=asNum($(prefix+'D').value);
+  return [n,d];
+}
+/* insert at caret for prime factor input */
+function insertAt(id, txt){
+  const el=$(id); const start=el.selectionStart||el.value.length; const end=el.selectionEnd||el.value.length;
+  el.value = el.value.slice(0,start) + txt + el.value.slice(end);
+  const pos = start + txt.length;
+  el.setSelectionRange(pos,pos); el.focus();
+}
+
+/* ---------- Marking per question ---------- */
+
+/* Q1 */
+function mark_q1(){
+  let m=0;
+  if(asNum($('q1a').value)===17) m++;
+  if(asNum($('q1b').value)===11) m++;
+  return m;
+}
+
+/* Q2 */
+function parsePrimeProduct(expr){
+  if(!expr) return null;
+  let s=expr.replace(/\s+/g,'').toLowerCase();
+  s=s.replace(/·/g,'×').replace(/\*/g,'×').replace(/x/g,'×'); // unify
+  s=s.replace(/([0-9])²/g,'$1^2').replace(/([0-9])³/g,'$1^3').replace(/([0-9])⁴/g,'$1^4').replace(/([0-9])⁵/g,'$1^5');
+  const parts=s.split('×').filter(Boolean);
+  let product=1, primes=true;
+  for(const p of parts){
+    let base, pow=1;
+    if(p.includes('^')){
+      const [b,e]=p.split('^');
+      base=parseInt(b,10); pow=parseInt(e,10);
+    }else{
+      base=parseInt(p,10); pow=1;
+    }
+    if(!Number.isFinite(base) || !Number.isFinite(pow)) return null;
+    const isPrime=(n)=>{ if(n<2) return false; for(let i=2;i*i<=n;i++){ if(n%i===0) return false; } return true; }
+    if(!isPrime(base)) primes=false;
+    product *= base**pow;
+  }
+  return {product, primes};
+}
+function mark_q2(){
+  let m=0;
+  const res=parsePrimeProduct($('q2a').value);
+  if(res && res.product===196){
+    m+=2;
+    if(res.primes) m+=1;
+  }
+  if(asNum($('q2bH').value)===12) m++;
+  if(asNum($('q2bL').value)===144) m++;
+  return m;
+}
+
+/* Q3 */
+function mark_q3(){
+  let m=0;
+  if(asNum($('q3a').value)===8500) m++;
+  if(String($('q3b').value).trim()==='0.6' || tol($('q3b').value,0.6,1e-9)) m++;
+  if(asNum($('q3c').value)===25) m++;
+  return m;
+}
+
+/* Q4 */
+function mark_q4(){
+  let m=0;
+  const a=getFrac('q4a'); if(fracOK(a[0],a[1],1,2,true)) m+=2;
+  const b=getFrac('q4b'); if(fracOK(b[0],b[1],11,24,true)) m+=2;
+  return m;
+}
+
+/* Q5 */
+function mark_q5(){
+  let m=0;
+  const a=getFrac('q5a'); if(fracOK(a[0],a[1],2,5,true)) m+=2;
+  const b=getFrac('q5b'); if(fracOK(b[0],b[1],9,8,true)) m+=2;
+  return m;
+}
+
+/* Q6 */
+function mark_q6(){
+  let m=0;
+  const a=getFrac('q6a'); if(fracOK(a[0],a[1],7,20,true)) m++;
+  const b=getFrac('q6b'); if(fracOK(b[0],b[1],2,5,true)) m++;
+  const c=getFrac('q6c'); if(fracOK(c[0],c[1],3,4,true)) m++;
+  if(tol($('q6d').value,0.375,1e-4)) m++;
+  return m;
+}
+
+/* Q7 */
+function mark_q7(){
+  let m=0;
+  const a=getFrac('q7a'); if(fracOK(a[0],a[1],5,12,true)) m++;
+  const b=getFrac('q7b'); if(fracOK(b[0],b[1],7,12,true)) m++;
+  return m;
+}
+
+/* Q8 */
+function mark_q8(){
+  let m=0;
+  if(asNum($('q8a').value)===12) m+=2; // method & answer
+  if(asNum($('q8b').value)===45) m+=1;
+  return m;
+}
+
+/* Q9 */
+function mark_q9(){
+  let m=0;
+  if(asNum($('q9a').value)===7000) m++;
+  if(asNum($('q9b').value)===150) m+=2;
+  return m;
+}
+
+/* Q10 */
+function mark_q10(){
+  let m=0;
+  if(tol($('q10a').value,1.5,0.01)) m+=2;
+  if(asNum($('q10b').value)===8) m+=2;
+  return m;
+}
+
+/* Q11 */
+function mark_q11(){
+  let m=0;
+  if(asNum($('q11a').value)===90) m+=2;
+  if(asNum($('q11b').value)===690) m+=2;
+  return m;
+}
+
+/* Q12 */
+function mark_q12(){
+  let m=0;
+  if(asNum($('q12a').value)===45) m+=2;
+  if(asNum($('q12b').value)===27) m+=2;
+  return m;
+}
+
+/* Q13 */
+function mark_q13(){
+  let m=0;
+  if(asNum($('q13a').value)===18) m++;
+  if(asNum($('q13b').value)===5) m++;
+  if(asNum($('q13c').value)===45) m++;
+  return m;
+}
+
+/* Q14 */
+function mark_q14(){
+  let m=0;
+  if(asNum($('q14a').value)===42) m++;
+  if(asNum($('q14b').value)===90) m+=2;
+  return m;
+}
+
+/* Q15 */
+function mark_q15(){
+  let m=0;
+  const a=String($('q15a').value||'').replace(/\s/g,'');
+  if(a==='0.6:1'||a==='0.60:1') m++;
+  const b=String($('q15b').value||'').replace(/\s/g,'').toLowerCase();
+  if(b==='1:4'||b==='1:4.0') m++;
+  return m;
+}
+
+/* Q16 */
+function mark_q16(){
+  let m=0;
+  if(asNum($('q16a').value)===54) m++;
+  if(asNum($('q16b').value)===65) m++;
+  return m;
+}
+
+/* ---------- Totals, colours, SMART targets ---------- */
+const qMax=[2,5,3,4,4,4,2,3,3,4,4,4,3,3,2,2];
+const topics=[
+  'BIDMAS (two operations)',
+  'Prime factors; HCF & LCM',
+  'Place value, rounding & powers',
+  'Fractions: add & subtract',
+  'Fractions: multiply & divide',
+  'FDP conversions & simplification',
+  'Fractions from a set',
+  'Percentages: amount & change',
+  'Rounding & estimation',
+  'Scale/Maps: actual ↔ map distance',
+  'Money: simple interest',
+  'Ratio: sharing a quantity',
+  'Inverse proportion (hoses)',
+  'Enlargement: perimeter & area',
+  'Ratio forms n:1 and 1:n',
+  'Currency conversion (£ ↔ €)'
+];
+
+/* UPDATED from your 'century nuggets.csv' */
+const nuggets=[
+  ['MF3.14'],                                // Q1  BIDMAS (Introduction)
+  ['MF5.10','MF5.16'],                       // Q2  Prime factors; HCF & LCM
+  ['MF6.01','MF2.13','MF12.01'],             // Q3  Place value (decimals), Rounding (10/100/1000), Squares
+  ['MF4.10','MF4.11'],                     // Q4  Add fractions 1; Subtract fractions 1
+  ['MF4.23','MF4.25'],                     // Q5  Multiply fractions 1; Divide fractions 1
+  ['MF8.06','MF8.08'],                      // Q6  Fractions→Decimals/Percentages 1; Simplifying Fractions 1
+  ['MF4.01'],                                // Q7  Fraction of Amounts (Non‑Calculator) 1
+  ['MF7.08','MF10.02'],                      // Q8  Finding % of Amounts 1; Percentage Decrease
+  ['MF2.13','MF9.05','MF9.11'],                       // Q9  Rounding to 10/100/1000; 1 Significant Figure 3
+  ['MF39.05'],                               // Q10 Using Scales on a Map
+  ['MF10.05'],                               // Q11 Simple Interest
+  ['MF15.15'],                               // Q12 Sharing with a Given Ratio modelling
+  ['MF16.07'],                               // Q13 Inverse Proportion 1
+  ['MF43.02'],                               // Q14 Similar Polygons: Finding the Scale Factor
+  ['MF15.03','MF15.04'],                     // Q15 Ratios in the form n:1 and 1:n
+  ['MF37.10']                                // Q16 Converting Currency 1
+];
+
+const MAX = qMax.reduce((a,b)=>a+b,0);
+$('totalmax').textContent=MAX;
+
+function grade_from(raw,max){
+  const p=raw/max;
+  if(p>=0.60) return "5";
+  if(p>=0.47) return "4";
+  if(p>=0.34) return "3";
+  if(p>=0.22) return "2";
+  if(p>=0.10) return "1";
+  return "U";
+}
+function colourClass(score,max){
+  if(score===0) return 'bad';
+  if(score===max) return 'good';
+  if(score>=Math.ceil(max/2)) return 'mid';
+  return 'bad';
+}
+
+function lockPaper(){
+  // Disable all inputs/selects/textarea and most buttons
+  document.querySelectorAll('input,select,textarea,button').forEach(btn=>{
+    const keep = (btn.id==='markAllBtn'||btn.id==='copyBtn' || btn.closest('#tabbar') || btn.closest('#results'));
+    if(!keep) btn.disabled=true;
+  });
+}
+
+function doMarkAll(){
+  const scores=[
+    mark_q1(),mark_q2(),mark_q3(),mark_q4(),mark_q5(),mark_q6(),mark_q7(),mark_q8(),
+    mark_q9(),mark_q10(),mark_q11(),mark_q12(),mark_q13(),mark_q14(),mark_q15(),mark_q16()
+  ];
+  const total=scores.reduce((a,b)=>a+b,0);
+  $('totalscore').textContent=total;
+  const gradeText = grade_from(total,MAX);
+  $('grade').textContent=gradeText;
+
+  // Colour tabs
+  for(let i=0;i<16;i++){
+    const tab=tabs[i];
+    tab.classList.remove('good','mid','bad','active');
+    tab.classList.add(colourClass(scores[i],qMax[i]));
+  }
+  // Lock inputs
+  lockPaper();
+
+  // Build SMART targets text (prepend performance)
+  let lines=[];
+  lines.push("My end‑of‑topic assessment for term one performance is:");
+  lines.push(`Mark: ${total} / ${MAX}`);
+  lines.push(`Grade: ${gradeText}`);
+  lines.push("");
+  lines.push("Based on my performance on this end‑of‑topic assessment, my SMART targets are to complete these Century nuggets:");
+  lines.push("");
+
+  let anyZero=false;
+  for(let i=0;i<16;i++){
+    if(scores[i]===0){
+      const codes=(nuggets[i]||[]).join(', ');
+      lines.push(`• ${topics[i]} — ${codes}`);
+      lines.push(""); // blank line between targets
+      anyZero=true;
+    }
+  }
+  if(!anyZero){
+    lines.push("• Great work — no zero‑score topics this time. Keep practising recent topics to consolidate.");
+  }
+  $('smartBox').value = lines.join("\n");
+  $('smartWrap').style.display='block';
+
+  // Results tab & button state
+  const btn=$('markAllBtn'); btn.disabled=true; btn.textContent='Marked & locked';
+  showTab('results');
+}
+$('markAllBtn').addEventListener('click', doMarkAll);
+
+/* Copy to clipboard */
+$('copyBtn').addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText($('smartBox').value);
+    $('copyBtn').textContent='Copied ✓';
+    setTimeout(()=>{$('copyBtn').textContent='Copy to clipboard';},1200);
+  }catch(e){
+    $('smartBox').select(); document.execCommand('copy');
+  }
+});
+
+/* ---------- Simple copy/source deterrents (keeps the Copy button working) ---------- */
+document.addEventListener('contextmenu', (e)=>{ e.preventDefault(); }, {capture:true});
+document.addEventListener('keydown', (e)=>{
+  const k=(e.key||'').toLowerCase();
+  // Block Ctrl/Cmd+C and Ctrl/Cmd+U
+  if((e.ctrlKey||e.metaKey) && (k==='c' || k==='u')){ e.preventDefault(); }
+}, {capture:true});
+</script>
+</body>
+</html>
